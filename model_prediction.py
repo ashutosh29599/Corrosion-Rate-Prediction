@@ -1,10 +1,11 @@
 import glob
 import logging
+import os
 
 import joblib
 from sklearn import metrics
 
-from data_loader import load_data, load_features_and_target
+from data_loader import load_data, load_features_and_target, store_file
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s",
                     filename="logs/model_prediction.log", filemode="a")
@@ -20,7 +21,11 @@ def predict_model():
     for joblib_file in joblib_files:
         loaded_model = joblib.load(joblib_file)
         y_pred = loaded_model.predict(x)
-        model_name = joblib_file.split(".")[0]
+        filename = os.path.basename(joblib_file)
+        model_name = filename.split(".")[0]
+
+        features = x.columns.tolist()
+        store_file(x, y_pred, features, filename=f"score_train/predictions_{model_name}.csv")
 
         logging.info("--------------------")
         logging.info(f"{model_name} Performance:")

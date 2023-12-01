@@ -1,18 +1,11 @@
-import pandas as pd
 from sklearn.model_selection import train_test_split
 
 from data_configurations import features, categorical_features, target
-from data_loader import load_data
+from data_loader import load_data, store_file
 
 
 def split_data(x, y):
     return train_test_split(x, y, test_size=0.5, random_state=42)
-
-
-def store_file(x, y, features, filename):
-    data = pd.DataFrame(x, columns=features)
-    data[target] = y
-    data.to_csv(filename, index=False)
 
 
 def process_data_file():
