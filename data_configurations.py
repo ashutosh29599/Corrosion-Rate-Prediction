@@ -4,3 +4,5 @@ features = ["Soil Resistivity (Ohm-m)", "pH", "Moisture Equivalent(%)", "exposur
 categorical_features = ["Iron and Steel Type"]
 
 target = "Loss Oz/ft2"
+
+models_to_score = ["Neural Network Regression", "Random Forest Regression", "Gradient Boosting Regressor"]
