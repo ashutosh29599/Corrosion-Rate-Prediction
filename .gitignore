@@ -1,3 +1,6 @@
 .idea/
 venv/
 logs/
+score_train/.DS_Store
+.DS_Store
+
