@@ -1,6 +1,8 @@
+import os
+
 import numpy as np
 
-from data_configurations import models_to_score, target
+from data_configurations import models_to_score, target, score_var
 from data_loader import load_data
 
 
@@ -31,7 +33,7 @@ def sigmoid_normalization(predictions):
 def softmax_normalization(predictions):
     exp_predictions = np.exp(predictions)
     normalized_predictions = exp_predictions / np.sum(exp_predictions)
-    return normalized_predictions
+    return normalized_predictions.tolist()
 
 
 def absolute_error(true_value, predicted_value):
@@ -46,17 +48,17 @@ def score(true_values, model_predictions, score_norm_function=softmax_normalizat
     all_scores = []
 
     for i in range(len(true_values)):
-        absolute_diffs = []
+        differences = []
         for predictions in model_predictions:
-            absolute_diffs.append(error_function(true_values[i], predictions[i]))
+            differences.append(error_function(true_values[i], predictions[i]))
 
-        prediction_scores = score_norm_function(absolute_diffs)
-        all_scores.append(prediction_scores.tolist())
+        prediction_scores = score_norm_function(differences)
+        all_scores.append(prediction_scores)
 
     return all_scores
 
 
-def build_score():
+def build_all_score():
     score_df = load_data("score_train/score_train.csv")
     true_values = score_df[target].values
     model_predictions = []
@@ -67,20 +69,31 @@ def build_score():
         predicted_dfs.append(predicted_df)
         model_predictions.append(predicted_values)
 
-    all_scores = score(true_values, model_predictions)
-    model_scores = np.transpose(np.array(all_scores))
+    score_norm_functions = [min_max_normalization, z_score_normalization, sigmoid_normalization, log_transformation,
+                            softmax_normalization]
+    error_functions = [absolute_error, squared_error]
+    for score_norm_function in score_norm_functions:
+        for error_function in error_functions:
+            build_score(error_function, model_predictions, predicted_dfs, score_norm_function, true_values)
 
+
+def build_score(error_function, model_predictions, predicted_dfs, score_norm_function, true_values):
+    all_scores = score(true_values, model_predictions, score_norm_function, error_function)
+    model_scores = np.transpose(np.array(all_scores))
     for i in range(len(models_to_score)):
         model = models_to_score[i]
         predicted_df = predicted_dfs[i]
         score_values = model_scores[i]
-        store_score_file(predicted_df, score_values, filename=f"score_train/score_{model}.csv")
+        directory = f"score_train/score/{score_norm_function.__name__} and {error_function.__name__}"
+        os.makedirs(directory, exist_ok=True)
+        file = f"score_{model}.csv"
+        store_score_file(predicted_df, score_values, filename=f"{directory}/{file}")
 
 
 def store_score_file(df, score_values, filename):
-    df["score"] = score_values
+    df[score_var] = score_values
     df.to_csv(filename, index=False)
 
 
 if __name__ == '__main__':
-    build_score()
+    build_all_score()

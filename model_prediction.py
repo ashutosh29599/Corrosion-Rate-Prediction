@@ -5,14 +5,14 @@ import os
 import joblib
 from sklearn import metrics
 
-from data_loader import load_data, load_features_and_target, store_file
+from data_loader import load_data, load_features_and_target
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s",
                     filename="logs/model_prediction.log", filemode="a")
 
 
-def predict_model():
-    df = load_data("score_train/score_train.csv")
+def predict_model(data_file, is_store_file=True):
+    df = load_data(data_file)
     x, y = load_features_and_target(df)
 
     folder_path = "model_train/*.joblib"
@@ -24,8 +24,9 @@ def predict_model():
         filename = os.path.basename(joblib_file)
         model_name = filename.split(".")[0]
 
-        features = x.columns.tolist()
-        store_file(x, y_pred, features, filename=f"score_train/predictions_{model_name}.csv")
+        if is_store_file:
+            features = x.columns.tolist()
+            store_file(x, y_pred, features, filename=f"score_train/predictions_{model_name}.csv")
 
         logging.info("--------------------")
         logging.info(f"{model_name} Performance:")
@@ -37,4 +38,6 @@ def predict_model():
 
 
 if __name__ == '__main__':
-    predict_model()
+    # filename = "score_train/score_train.csv"
+    filename = "test/test.csv"
+    predict_model(filename, is_store_file=False)
