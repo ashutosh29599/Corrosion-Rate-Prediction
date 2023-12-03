@@ -37,6 +37,8 @@ def predict_model():
     x, y = load_features_and_target(df)
     prediction_models = load_prediction_models()
 
+    logging.info(f"--Using Score Base Model: {score_base_model}--")
+
     for score_norm_function in score_norm_functions:
         for error_function in error_functions:
             y_pred = []
