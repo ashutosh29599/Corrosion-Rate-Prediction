@@ -5,7 +5,7 @@ import os
 import joblib
 from sklearn import metrics
 
-from data_loader import load_data, load_features_and_target
+from data_loader import load_data, load_features_and_target, store_file
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s",
                     filename="logs/model_prediction.log", filemode="a")
