@@ -13,3 +13,7 @@ score_norm_functions = ["min_max_normalization", "z_score_normalization", "sigmo
                         "softmax_normalization"]
 
 error_functions = ["absolute_error", "squared_error"]
+
+data_files = {"model_train": "model_train/model_train.csv",
+              "score_train": "score_train/score_train.csv",
+              "test": "test/test.csv"}

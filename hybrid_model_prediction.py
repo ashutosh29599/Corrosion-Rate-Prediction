@@ -3,6 +3,7 @@ import sys
 
 import joblib
 import numpy as np
+import pandas as pd
 from sklearn import metrics
 
 from data_configurations import score_norm_functions, error_functions, models_to_score
@@ -42,6 +43,7 @@ def predict_model():
 
     logging.info(f"--Using Score Base Model: {score_base_model}--")
 
+    metrics_list = []
     for score_norm_function in score_norm_functions:
         for error_function in error_functions:
             y_pred = []
@@ -61,13 +63,25 @@ def predict_model():
 
             y_pred = np.array(y_pred)
 
+            mae = metrics.mean_absolute_error(y, y_pred)
+            mse = metrics.mean_squared_error(y, y_pred)
+            rmse = metrics.mean_squared_error(y, y_pred, squared=False)
+            r2 = metrics.r2_score(y, y_pred)
+
             logging.info("--------------------")
             logging.info(f"{score_norm_function}--{error_function} Performance:")
-            logging.info(f"Mean Absolute Error: {metrics.mean_absolute_error(y, y_pred)}")
-            logging.info(f"Mean Squared Error: {metrics.mean_squared_error(y, y_pred)}")
-            logging.info(f"Root Mean Squared Error: {metrics.mean_squared_error(y, y_pred, squared=False)}")
-            logging.info(f"R2 Score:{metrics.r2_score(y, y_pred)}")
+            logging.info(f"Mean Absolute Error: {mae}")
+            logging.info(f"Mean Squared Error: {mse}")
+            logging.info(f"Root Mean Squared Error: {rmse}")
+            logging.info(f"R2 Score:{r2}")
             logging.info("--------------------")
+
+            metrics_list.append(
+                {"score_norm_function": score_norm_function, "error_function": error_function, "MAE": mae, "MSE": mse,
+                 "RMSE": rmse, "R2": r2})
+
+    metrics_df = pd.DataFrame(metrics_list, index=None)
+    metrics_df.to_csv(f"test/score_model_{score_base_model}_metrics.csv")
 
 
 if __name__ == '__main__':
