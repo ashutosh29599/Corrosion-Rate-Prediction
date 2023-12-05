@@ -2,6 +2,9 @@ import logging
 import os
 
 import joblib
+from sklearn.linear_model import LinearRegression
+from sklearn.neural_network import MLPRegressor
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.model_selection import GridSearchCV
 
@@ -12,10 +15,17 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
                     filename="logs/score_training.log", filemode="a")
 
 models = {
-    "Gradient Boosting Regressor": GradientBoostingRegressor(),
+    # "Linear Regression": LinearRegression(),
+    # "Neural Network Regression": MLPRegressor(max_iter=2000),
+    "Random Forest Regression": RandomForestRegressor(),
+    # "Gradient Boosting Regressor": GradientBoostingRegressor(),
 }
 
 param_dicts = {
+    "Neural Network Regression": {"params": {"hidden_layer_sizes": [(50,), (100,), (50, 50), (100, 50, 25)]},
+                                  "iters": 4},
+    "Random Forest Regression": {"params": {"max_depth": [None, 10, 20], "n_estimators": [50, 100, 200],
+                                            "max_features": ["sqrt", "log2"]}, "iters": 10},
     "Gradient Boosting Regressor": {"params": {"n_estimators": [50, 100, 200], "learning_rate": [0.01, 0.1, 0.2],
                                                "max_depth": [3, 4, 5]}, "iters": 10},
 }

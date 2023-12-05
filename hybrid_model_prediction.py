@@ -11,7 +11,10 @@ from data_loader import load_data, load_features_and_target
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s",
                     filename="logs/hybrid_model_prediction.log", filemode="a")
 
-score_base_model = "Gradient Boosting Regressor"
+# score_base_model = "Gradient Boosting Regressor"
+# score_base_model = "Linear Regression"
+# score_base_model = "Neural Network Regression"
+score_base_model = "Random Forest Regression"
 
 
 def load_score_models(score_norm_function, error_function):
